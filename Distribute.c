@@ -55,8 +55,9 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
 
 
 /* 
- * Given the head and the tail of an struct movie SLL,
- * create a node with mid mid and year year and place it at the end of SLL.
+ * Given the head and the tail of a struct movie SLL, creates a node 
+ * with mid mid and year year and place it at the end of the SLL.
+ * Time complexity: O(1)
 */
 int insert_end(struct movie** head, struct movie** tail, unsigned mid, unsigned year) {
 	/* Node of category list*/
@@ -83,7 +84,8 @@ int insert_end(struct movie** head, struct movie** tail, unsigned mid, unsigned 
 
 /*
  * Split new_movies_list and place it to the category array.
- * SL_array is a list of SLL heads.
+ * SL_array is an array of SLL heads.
+ * Time complexity: O(N)
 */
 void split_list() {
     struct new_movie* tmp = new_movies_list;
@@ -100,13 +102,67 @@ void split_list() {
         tmp = tmp->next;
 
         cat = cur->category;
+
+        /* Add to the proper category table element*/
         insert_end(&category_array[cat], &SL_tails[cat], cur->info.mid, cur->info.year);
 
-		free(cur);
+        free(cur); /* Deallocate node from new_movies_list*/
     }
 
     new_movies_list = NULL;
 }
+
+/*
+ * Given the head of a category list, search for a movie with id mid.
+ * Returns the movie_info of the movie found.
+ * If there is no movie with id mid, retuns a
+ * struct movie_info with mid = year = -1.  
+*/
+struct movie_info CategoryListSearch(struct movie* head, unsigned mid) {
+    struct movie* tmp = head;
+    struct movie_info errorinfo = {-1, -1}; // error info
+
+    /* 
+     * Scan the whole list. Category list is sorted so we
+     * don't need to scan movies with id larger than mid.
+    */
+    while (tmp != NULL && tmp->info.mid < mid) {
+        tmp = tmp->next;
+    }
+
+    // Here tmp is NULL or has tmp->info.mid >= mid
+
+    if (tmp == NULL || tmp->info.mid != mid) {
+        return errorinfo;
+    }
+    else if (tmp->info.mid == mid){
+        return tmp->info; // movie found
+    }
+}
+
+/*
+ * Scan every category list from the category table to find
+ * the movie with the movie id mid.
+ * 
+ * Returns the movie_info of the movie with movie Id mid.
+ * If there is no movie with the given mid, it returns 
+ * a struct movie_info with mid = year = -1.
+*/
+struct movie_info CategoryArraySearch(unsigned mid) {
+    struct movie_info minfo; /* Movie info to return */ 
+    int i = 0;
+    for (i = 0; i < 6; ++i) {
+        minfo = CategoryListSearch(category_array[i], mid);
+
+        if (minfo.mid != -1) break; // Movie found
+    }
+    return minfo;
+}
+
+/*********************************
+ ************ PRINTS *************
+ *********************************
+*/
 
 void print_new_movie_list() {
     struct new_movie* tmp = new_movies_list;
@@ -154,7 +210,7 @@ int main(void) {
 
     NewMoviesInsertSorted(10, DRAMA, 1976);
     NewMoviesInsertSorted(18, DRAMA, 1976);
-    NewMoviesInsertSorted(147, COMEDY, 1976);
+    NewMoviesInsertSorted(147, COMEDY, 2014);
     NewMoviesInsertSorted(4, DRAMA, 1976);
     NewMoviesInsertSorted(711, ROMANCE, 1976);
     NewMoviesInsertSorted(235, SCIFI, 1976);
@@ -170,6 +226,11 @@ int main(void) {
 
 	print_table();
     print_new_movie_list();
+
+    /*Search for a movie id*/
+    struct movie_info minfo = CategoryArraySearch(1);
+    printf("Mid = %d, Year = %d\n", minfo.mid, minfo.year);
+
 
 	return 0;
 }

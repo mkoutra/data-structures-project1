@@ -24,6 +24,22 @@ int UserListSearch(int uid) {
     return (tmp != guard); // True if value was not found.
 }
 
+/* Returns a pointer to the node of user_list with id uid, else NULL*/
+struct user* FindUserList(int uid) {
+    /* Insert the value inside the guard node*/
+    guard->uid = uid;
+    
+    struct user* tmp = user_list;
+    while (tmp->uid != uid) {
+        tmp = tmp->next;
+    }
+
+    /* Bring guard back to initial state*/
+    guard->uid = -1;
+
+    return (tmp != guard) ? tmp : NULL;
+}
+
 int UserListInsert(int uid) {
     struct user* new_user = (struct user*) malloc(sizeof(struct user));
     if (new_user == NULL) {
@@ -48,7 +64,7 @@ int UserListInsert(int uid) {
     return 1;
 }
 
-void print_list() {
+void print_user_list() {
     struct user* tmp = user_list;
     
     printf("[");
@@ -75,13 +91,13 @@ int main(void) {
 
     printf("%d\n", UserListInsert(5));
     printf("%d\n", UserListInsert(10));
-    print_list();
+    print_user_list();
 
     printf("%d\n", UserListInsert(4));
     printf("%d\n", UserListInsert(4));
     printf("%d\n", UserListInsert(100));
 
-    print_list();
+    print_user_list();
 
     return 0;
 }
