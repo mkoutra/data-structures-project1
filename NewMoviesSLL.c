@@ -10,6 +10,18 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     struct new_movie *prev = NULL;              /* parent of new node */
     struct new_movie *tmp = new_movies_list;    /* node used for scanning */
 
+    /* Scan the list to find the right place*/
+    while ((tmp!= NULL) && (tmp->info.mid < mid)) {
+        prev = tmp;
+        tmp = tmp->next;
+    }
+
+    /* We don't allow duplicate movies*/ 
+    if ((tmp!= NULL) && (tmp->info.mid == mid)) {
+        fprintf(stderr, "Movie %d is already inside.\n", mid);
+        return -1;
+    }
+
     /* Create and initialize new node*/
     struct new_movie* new_film = (struct new_movie*)malloc(sizeof(struct new_movie));
     if (new_film == NULL) {
@@ -20,11 +32,6 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     new_film->info.year = year;
     new_film->category = cat;
 
-    /* Scan the list to find the right place*/
-    while ((tmp!= NULL) && (tmp->info.mid < mid)) {
-        prev = tmp;
-        tmp = tmp->next;
-    }
 
     /* 
      * If tmp != NULL then tmp's mid > mid.

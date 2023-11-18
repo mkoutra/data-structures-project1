@@ -12,6 +12,18 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     struct new_movie *prev = NULL;              /* parent of new node */
     struct new_movie *tmp = new_movies_list;    /* node used for scanning */
 
+    /* Scan the list to find the right place*/
+    while ((tmp!= NULL) && (tmp->info.mid < mid)) {
+        prev = tmp;
+        tmp = tmp->next;
+    }
+
+    /* We don't allow duplicate movies*/ 
+    if ((tmp!= NULL) && (tmp->info.mid == mid)) {
+        fprintf(stderr, "Movie %d is already inside.\n", mid);
+        return -1;
+    }
+
     /* Create and initialize new node*/
     struct new_movie* new_film = (struct new_movie*)malloc(sizeof(struct new_movie));
     if (new_film == NULL) {
@@ -22,11 +34,6 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     new_film->info.year = year;
     new_film->category = cat;
 
-    /* Scan the list to find the right place*/
-    while ((tmp!= NULL) && (tmp->info.mid < mid)) {
-        prev = tmp;
-        tmp = tmp->next;
-    }
 
     /* 
      * If tmp != NULL then tmp's mid > mid.
@@ -80,9 +87,9 @@ int insert_end(struct movie** head, struct movie** tail, unsigned mid, unsigned 
 */
 void split_list() {
     struct new_movie* tmp = new_movies_list;
-    struct new_movie* cur = NULL;
-    struct movie* SL_tails[6]; 	/* Contains the tails of each category list */
-	int cat; 					/* Movie Category*/
+    struct new_movie* cur = NULL;   /* Used to deallocate new_movies_list*/
+    struct movie* SL_tails[6]; 	    /* Contains the tails of each category list */
+	int cat; 					    /* Movie Category*/
 	int i = 0;
 
 	/* Initialize tails */
@@ -95,9 +102,10 @@ void split_list() {
         cat = cur->category;
         insert_end(&category_array[cat], &SL_tails[cat], cur->info.mid, cur->info.year);
 
-		cur->next = NULL;
 		free(cur);
     }
+
+    new_movies_list = NULL;
 }
 
 void print_new_movie_list() {
@@ -137,6 +145,13 @@ void print_table() {
 
 
 int main(void) {
+    int i = 0;
+    for (i = 0; i < 6; ++i) {
+        category_array[i] = NULL;
+    }
+
+    new_movies_list = NULL;
+
     NewMoviesInsertSorted(10, DRAMA, 1976);
     NewMoviesInsertSorted(18, DRAMA, 1976);
     NewMoviesInsertSorted(147, COMEDY, 1976);
@@ -154,7 +169,7 @@ int main(void) {
 	split_list();
 
 	print_table();
-	print_new_movie_list();
+    print_new_movie_list();
 
 	return 0;
 }
