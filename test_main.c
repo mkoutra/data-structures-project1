@@ -35,47 +35,66 @@ int main(void) {
     user_list = guard;
 
     /* Fill the user list*/
-    UserListInsert(5);
-    UserListInsert(10);
-    UserListInsert(4);
-    UserListInsert(100);
-    UserListInsert(3);
-    print_user_list();
+    // UserListInsert(5);
+    // UserListInsert(10);
+    // UserListInsert(4);
+    // UserListInsert(100);
+    // UserListInsert(3);
 
-    /* Fill new movies list */
-    NewMoviesInsertSorted(10, DRAMA, 1976);
-    NewMoviesInsertSorted(18, DRAMA, 1976);
-    NewMoviesInsertSorted(147, COMEDY, 2014);
-    NewMoviesInsertSorted(4, DRAMA, 1976);
-    NewMoviesInsertSorted(711, ROMANCE, 1976);
-    NewMoviesInsertSorted(235, SCIFI, 1976);
-	NewMoviesInsertSorted(123, COMEDY, 1976);
-    NewMoviesInsertSorted(3, DRAMA, 1976);
-    NewMoviesInsertSorted(71, ROMANCE, 1976);
-    NewMoviesInsertSorted(25, SCIFI, 1976);
+    register_user(5);
+    register_user(10);
+    register_user(4);
+    register_user(100);
+    register_user(3);
+    // print_user_list();
+
+    // unregister_user(3);
+    // unregister_user(5);
+    // unregister_user(4);
+    // register_user(3);
+    // register_user(3);
+
+
+    // /* Fill new movies list */
+    add_new_movie(10, DRAMA, 1976);
+    add_new_movie(18, DRAMA, 1976);
+    add_new_movie(147, COMEDY, 2014);
+    add_new_movie(4, DRAMA, 1976);
+    add_new_movie(711, ROMANCE, 1976);
+    add_new_movie(235, SCIFI, 1976);
+	add_new_movie(123, COMEDY, 1976);
+    add_new_movie(3, DRAMA, 1976);
+    add_new_movie(71, ROMANCE, 1976);
+    add_new_movie(25, SCIFI, 1976);
     print_new_movie_list();
 
     /* Distribute new movies to category table */
-    split_list();
-    print_table();
+    // split_list();
+    // print_table();
+    distribute_new_movies();
 
-    watch(3, 147);
-    // watch(100, 10);
-    // watch(4, 123);
-    // watch(5, 25);
-    // watch(10, 235);
+    watch_movie(3, 147);
+    watch_movie(100, 10);
+    watch_movie(4, 123);
+    watch_movie(5, 25);
+    watch_movie(10, 235);
 
-    print_watch_stack(user_list->watchHistory);
-    print_watch_stack(user_list->next->watchHistory);
-    suggest(100);
-    print_sug_list(user_list->next->suggestedHead);
+    watch_movie(10, 711);
+    // print_watch_stack(user_list->watchHistory);
+    // print_watch_stack(user_list->next->watchHistory);
+    suggest_movies(100);
+    watch_movie(10, 4);
 
-    watch(3, 711);
-    watch(4, 18);
-    watch(5, 71);
-    watch(10, 4);
-    suggest(100);
-    print_sug_list(user_list->next->suggestedHead);
+    print_movies();
+    print_users();
+    // print_sug_list(user_list->next->suggestedHead);
+
+    // watch(3, 711);
+    // watch(4, 18);
+    // watch(5, 71);
+    // watch(10, 4);
+    // suggest(100);
+    // print_sug_list(user_list->next->suggestedHead);
 
     return 0;
 }

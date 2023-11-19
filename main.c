@@ -64,8 +64,11 @@ void init_structures(void)
         fprintf(stderr, "Malloc error\n");
         return ;
     }
-    guard->next = guard->suggestedHead = guard->suggestedTail = NULL;
     guard->uid = -1;
+	guard->suggestedHead = NULL;
+	guard->suggestedTail = NULL;
+    guard->watchHistory = NULL;
+	guard->next = NULL;
 
     user_list = guard;
 }
