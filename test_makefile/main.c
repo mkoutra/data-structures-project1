@@ -18,8 +18,6 @@
 
 #include "streaming_service.h"
 
-#include "cleaning_functions.h" /* Functions for memory deallocation*/
-
 /* Maximum input line size */
 #define MAX_LINE 1024
 
@@ -35,27 +33,32 @@
 #define DPRINT(...)
 #endif /* DEBUG */
 
+/*----------------------------------------------------------------------------*/
 
-/* Global Variables */
+/* Global Variables*/
 
 struct movie* category_array[6]; 	/* Each element is the head of an SLL */
 struct new_movie* new_movies_list;	/* Head of new movies SLL */
 struct user* user_list;				/* Head of user list SLL */
 struct user* guard;		            /* Guard used in user list */ 
 
-/* Initialization of global variables */
+/*
+* TODO: Initialize your
+* global structures here,
+* i.e., the user list (and sentinel
+* node), new releases list, category table
+*/
+
 void init_structures(void)
 {
-	/* Initialization of category table*/
     int i = 0;
     for (i = 0; i < 6; ++i) {
         category_array[i] = NULL;
     }
     
-	/* Initialization of the list containing the new movies */
     new_movies_list = NULL;
     
-    /* Initialization of Guard Node */ 
+    /* Initialization of Guard Node*/ 
     guard = (struct user*) malloc(sizeof(struct user));
     if (guard == NULL) {
         fprintf(stderr, "Malloc error\n");
@@ -67,40 +70,17 @@ void init_structures(void)
     guard->watchHistory = NULL;
 	guard->next = NULL;
 
-	/* Initialization of list containing the users*/
     user_list = guard;
 }
 
-/* Memory deallocation */
 void destroy_structures(void)
 {
-	struct user* user_tmp = user_list;
-	struct user* user_next = NULL;
-	int i = 0;
-
-	/* Deallocate lists related to users */
-	while (user_tmp != guard) {
-		/* Deallocate Watch history stack and suggested movies list*/
-		CleanStack(&user_tmp->watchHistory);
-		CleanSuggestedMovies(&user_tmp->suggestedHead, &user_tmp->suggestedTail);
-		
-		/* Deallocate the user node*/
-		user_next = user_tmp->next;
-		free(user_tmp);
-		user_tmp = user_next;
-	}
-	
-	/* Deallocate guard node*/
-	free(guard);
-	guard = NULL;
-
-	/* Deallocate category lists*/
-	for (i = 0; i < 6; ++i) {
-		CleanCategoryList(&category_array[i]);
-	}
-
-	/* Deallocate new movie list*/
-	CleanNewMoviesList(&new_movies_list);
+	/*
+	 * TODO: For a bonus
+	 * empty all lists and stacks
+	 * and free all memory associated
+	 * with list/stack nodes here
+	 */
 }
 
 int main(int argc, char *argv[])

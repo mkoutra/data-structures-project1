@@ -1,16 +1,13 @@
-/*
- * This file contains function definitions for helper functions 
- * as well as for the event functions declared in streaming_service.h.
- * Also it has function definitions for the functions declared in cleaning_functions.h
- * 
- * Michalis Koutrakis
- * csdp1338 (MSc's student)
- * 19 November 2023
-*/
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include "streaming_service.h"
+
+/*
+ ******************************************************************************
+ ****************************** GLOBAL VARIABLES ******************************
+ ******************************************************************************
+*/
+
 
 /*
  ******************************************************************************
@@ -53,7 +50,9 @@ struct user* FindUserList(int uid) {
     return (tmp != guard) ? tmp : NULL;
 }
 
- /* Insert new user to the user list. Returns 0 on success, -1 otherwise. */
+/*
+ * Insert inside the user list. Return 1 on success, -1 otherwise.
+*/
 int UserListInsert(int uid) {
     struct user* new_user = (struct user*) malloc(sizeof(struct user));
     if (new_user == NULL) {
@@ -78,7 +77,6 @@ int UserListInsert(int uid) {
     return 0;
 }
 
-/* Deallocate all nodes from the suggested movie list given*/
 void CleanSuggestedMovies(struct suggested_movie** head, struct suggested_movie** tail) {
     struct suggested_movie* n; /* Next */
     struct suggested_movie* tmp = (*head);
@@ -147,10 +145,7 @@ void DeleteUser(int uid) {
  ******************************************************************************
 */
 
-/*
- * Insert new movies to new_movies_list in ascending order based on mid.
- * Returns 0 on success, -1 otherwise.
-*/
+/* Insert to a sorted list in ascending order.*/
 int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     struct new_movie *prev = NULL;              /* parent of new node */
     struct new_movie *tmp = new_movies_list;    /* node used for scanning */
@@ -167,7 +162,7 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
         return -1;
     }
 
-    /* Create and initialize the new node*/
+    /* Create and initialize new node*/
     struct new_movie* new_film = (struct new_movie*)malloc(sizeof(struct new_movie));
     if (new_film == NULL) {
         fprintf(stderr, "Malloc error\n");
@@ -176,6 +171,7 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     new_film->info.mid = mid;
     new_film->info.year = year;
     new_film->category = cat;
+
 
     /* 
      * If tmp != NULL then tmp's mid > mid.
@@ -195,20 +191,6 @@ int NewMoviesInsertSorted(unsigned mid, movieCategory_t cat, unsigned year) {
     return 0;
 }
 
-/* Deallocate all nodes of the new movies list given. */
-void CleanNewMoviesList(struct new_movie** L) {
-    struct new_movie* tmp = (*L);
-    struct new_movie* n = NULL;
-
-    while (tmp != NULL) {
-        n = tmp->next;
-        free(tmp);
-        tmp = n;
-    }
-
-    (*L) = NULL;
-}
-
 /*
  ******************************************************************************
  ******************************* CATEGORY TABLE *******************************
@@ -218,7 +200,6 @@ void CleanNewMoviesList(struct new_movie** L) {
 /* 
  * Given the head and the tail of a struct movie SLL, creates a node 
  * with mid mid and year year and place it at the end of the SLL.
- * Returns 0 on success, -1 otherwise.
  * Time complexity: O(1)
 */
 int insert_end(struct movie** head, struct movie** tail, unsigned mid, unsigned year) {
@@ -241,7 +222,7 @@ int insert_end(struct movie** head, struct movie** tail, unsigned mid, unsigned 
 
     new_node->next = NULL; /* Because it is placed at the tail */
 
-	return 0;
+	return 1;
 }
 
 /*
@@ -277,11 +258,11 @@ void split_list() {
  * Given the head of a category list, search for a movie with id mid.
  * Returns the movie_info of the movie found.
  * If there is no movie with id mid, retuns a
- * struct movie_info with mid = year = UINT_MAX.  
+ * struct movie_info with mid = year = -1.  
 */
 struct movie_info CategoryListSearch(struct movie* head, unsigned mid) {
     struct movie* tmp = head;
-    struct movie_info errorinfo = {UINT_MAX, UINT_MAX}; /* error info */
+    struct movie_info errorinfo = {-1, -1}; /* error info */
 
     /* 
      * Scan the whole list. Category list is sorted so we
@@ -307,7 +288,7 @@ struct movie_info CategoryListSearch(struct movie* head, unsigned mid) {
  * 
  * Returns the movie_info of the movie with movie Id mid.
  * If there is no movie with the given mid, it returns 
- * a struct movie_info with mid = year = UINT_MAX.
+ * a struct movie_info with mid = year = -1.
 */
 struct movie_info CategoryArraySearch(unsigned mid) {
     struct movie_info minfo; /* Movie info to return */ 
@@ -315,22 +296,9 @@ struct movie_info CategoryArraySearch(unsigned mid) {
     for (i = 0; i < 6; ++i) {
         minfo = CategoryListSearch(category_array[i], mid);
 
-        if (minfo.mid != UINT_MAX) break; /* Movie found */
+        if (minfo.mid != -1) break; /* Movie found */
     }
     return minfo;
-}
-
-/* Deallocate all nodes of the category List given*/
-void CleanCategoryList(struct movie** L) {
-    struct movie* tmp = (*L);
-    struct movie* n = NULL;
-    while (tmp != NULL) {
-        n = tmp->next;
-        free(tmp);
-        tmp = n;
-    }
-
-    (*L) = NULL;
 }
 
 /*
@@ -343,11 +311,11 @@ int IsEmptyWatchStack(struct movie* S) { return (S == NULL); }
 
 /*
  * Returns the movie_info of the top node of the watch stack.
- * If the stack is empty, returns a struct movie_info with mid = year = UINT_MAX.
+ * If the stack is empty, returns a struct movie_info with mid = year = -1.
 */
 struct movie_info Top(struct movie* S) {
     if (IsEmptyWatchStack(S)) {
-        struct movie_info errorinfo = {UINT_MAX, UINT_MAX}; /* Info to return when an error has occurred.*/
+        struct movie_info errorinfo = {-1, -1}; /* Info to return when an error has occurred.*/
         fprintf(stderr, "Nothing on top, watch stack is empty.\n");
         return errorinfo;
     }
@@ -376,11 +344,11 @@ int Push(struct movie** S, struct movie_info minfo) {
 
 /*
  * Returns the movie info of the top node and removes it from the watch stack.
- * If the stack is empty, returns a struct movie_info with mid = year = UINT_MAX.
+ * If the stack is empty, returns a struct movie_info with mid = year = -1.
 */
 struct movie_info Pop(struct movie** S) {
     if (IsEmptyWatchStack(*S)) {
-        struct movie_info errorinfo = {UINT_MAX, UINT_MAX}; /* Info to return when an error has occurred. */
+        struct movie_info errorinfo = {-1, -1}; /* Info to return when an error has occurred. */
         /* fprintf(stderr, "Nothing to pop, watch stack is empty.\n"); */
         return errorinfo;
     }
@@ -490,7 +458,7 @@ int watch(int uid, unsigned mid) {
 
     /* Find movie info from category table */
     minfo = CategoryArraySearch(mid);
-    if (minfo.mid == UINT_MAX) {
+    if (minfo.mid == -1) {
         fprintf(stderr, "Movie %d was not found\n", mid);
         return -1;
     }
@@ -510,7 +478,7 @@ int watch(int uid, unsigned mid) {
 /*
  * Insert a new node with info minfo to the right(next) of curr node.
  * Head and tail might need to change, so we pass them as index-to-index.
- * Also, it updates curr. Returns 1 on success, -1 otherwise.
+ * Also, it updates curr. 
  */
 int InsertRight(struct suggested_movie** curr, struct movie_info minfo,\
                  struct suggested_movie** head, struct suggested_movie** tail) {
@@ -552,7 +520,7 @@ int InsertRight(struct suggested_movie** curr, struct movie_info minfo,\
 /*
  * Insert a new node with info minfo to the left(prev) of curr node.
  * Head and tail might need to change, so we pass them as index-to-index.
- * Also, it updates curr. Returns 1 on success, -1 otherwise.
+ * Also, it updates curr. 
  */
 int InsertLeft(struct suggested_movie** curr, struct movie_info minfo,\
                  struct suggested_movie** head, struct suggested_movie** tail) {
@@ -622,12 +590,12 @@ int suggest(int uid) {
     to_left  = target_user->suggestedTail;
 
     /*  Scan user_list */
-    while(tmp_user != guard) {
+    while(tmp_user->uid != -1) {
         if (tmp_user->uid != uid) {
             minfo = Pop(&tmp_user->watchHistory);
             
             /* This user has nothing on his watch history */
-            if (minfo.mid == UINT_MAX) {
+            if (minfo.mid == -1) {
                 tmp_user = tmp_user->next; /* go to next user */
                 continue; /* go back to the while-loop */
             }
@@ -897,7 +865,7 @@ int watch_movie(int uid, unsigned mid) {
 
     /* Find movie info from category table */
     minfo = CategoryArraySearch(mid);
-    if (minfo.mid == UINT_MAX) {
+    if (minfo.mid == -1) {
         fprintf(stderr, "Movie %d was not found\n", mid);
         return -1;
     }
@@ -960,7 +928,7 @@ int suggest_movies(int uid) {
             minfo = Pop(&tmp_user->watchHistory);
             
             /* This user has nothing on his watch history */
-            if (minfo.mid == UINT_MAX) {
+            if (minfo.mid == -1) {
                 tmp_user = tmp_user->next; /* go to next user */
                 continue; /* go back to the while-loop */
             }

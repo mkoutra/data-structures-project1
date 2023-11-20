@@ -18,7 +18,7 @@
 
 #include "streaming_service.h"
 
-#include "cleaning_functions.h" /* Functions for memory deallocation*/
+#include "cleaning_functions.h"
 
 /* Maximum input line size */
 #define MAX_LINE 1024
@@ -71,7 +71,7 @@ void init_structures(void)
     user_list = guard;
 }
 
-/* Memory deallocation */
+/* Deallocate memory */
 void destroy_structures(void)
 {
 	struct user* user_tmp = user_list;
@@ -101,6 +101,7 @@ void destroy_structures(void)
 
 	/* Deallocate new movie list*/
 	CleanNewMoviesList(&new_movies_list);
+	printf("Cleaning completed.\n");
 }
 
 int main(int argc, char *argv[])

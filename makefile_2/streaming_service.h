@@ -56,17 +56,6 @@ struct user {
 };
 
 /*
- ******************************************************************************
- ****************************** GLOBAL VARIABLES ******************************
- ******************************************************************************
-*/
-
-extern struct user* user_list;
-extern struct user* guard;
-extern struct movie* category_array[6]; 	/* Each element is the head of an SLL */
-extern struct new_movie* new_movies_list;	/* Head of new movies, SLL */
-
-/*
  * Register User - Event R
  * 
  * Adds user with ID uid to
