@@ -3,8 +3,9 @@
  * as well as for the event functions declared in streaming_service.h.
  * Also it has function definitions for the functions declared in cleaning_functions.h
  * 
- * Michalis Koutrakis
+ * Michail E. Koutrakis
  * csdp1338 (MSc's student)
+ * Github: https://github.com/mkoutra
  * 19 November 2023
 */
 #include <stdio.h>
